@@ -71,7 +71,7 @@ public struct Keyboard {
         ButtonState(glfwGetKey(window.pointer, key.rawValue))
     }
     
-    public struct Modifier: OptionSet {
+    public struct Modifier: OptionSet, Sendable {
         public let rawValue: Int32
         public init(rawValue: Int32) {
             self.rawValue = rawValue & 0b111111

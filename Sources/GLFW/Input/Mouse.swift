@@ -25,7 +25,7 @@ public struct Mouse {
         set { glfwSetInputMode(window.pointer, .stickyMouseButtons, newValue.int32) }
     }
     
-    public enum Button: Int32 {
+    public enum Button: Int32, Sendable {
         case button1, button2, button3, button4, button5, button6, button7, button8
         public static let left = button1
         public static let right = button2
