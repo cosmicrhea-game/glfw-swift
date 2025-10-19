@@ -1,4 +1,4 @@
-# SwiftGLFW
+# GLFW for Swift
 
 A Swift library that adds a more Swift-like interface to [GLFW](https://github.com/glfw/glfw). ~~So far, it's only been tested on macOS, but it should compile and run on Windows and Linux with little difficulty~~. As of pull request #5, cross-platform *should* be working now.
 

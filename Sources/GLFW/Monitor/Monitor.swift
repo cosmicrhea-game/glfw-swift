@@ -2,7 +2,7 @@ import CGLFW3
 
 @MainActor
 public final class GLFWMonitor: GLFWObject {
-    public let pointer: OpaquePointer?
+    nonisolated(unsafe) public let pointer: OpaquePointer?
     
     public var connectionHandler: (() -> Void)?
     public var disconnectionHandler: (() -> Void)?

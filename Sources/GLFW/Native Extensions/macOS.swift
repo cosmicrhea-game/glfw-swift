@@ -1,92 +1,202 @@
 #if os(macOS) && canImport(Cocoa)
-import Cocoa
-import CGLFW3
+  import Cocoa
+  import CGLFW3
 
-extension GLFWSession {
+  extension GLFWSession {
     @InitHint(.cocoaChDirResources, default: false)
     public static var relativeToAppResources: Bool
-    
+
     @InitHint(.cocoaMenuBar, default: true)
     public static var generateMenuBar: Bool
-}
+  }
 
-extension GLFWMonitor {
+  extension GLFWMonitor {
     nonisolated public var directDisplayID: CGDirectDisplayID {
-        return glfwGetCocoaMonitor(pointer)
+      return glfwGetCocoaMonitor(pointer)
     }
-}
+  }
 
-extension GLFWWindow {
+  extension GLFWWindow {
     nonisolated public var nsWindow: NSWindow? {
-        return glfwGetCocoaWindow(pointer) as? NSWindow
+      return glfwGetCocoaWindow(pointer) as? NSWindow
     }
-}
+  }
 
-extension Image {
+  extension Image {
     public func makeCGImage() -> CGImage? {
-        let bytes = 4 * width * height
-        let buffer = UnsafeMutableRawPointer.allocate(byteCount: bytes, alignment: 0)
-        pixels.withUnsafeBytes { pixels in
-            buffer.copyMemory(from: pixels.baseAddress!, byteCount: pixels.count)
-        }
-        
-        let bitmapInfo = CGBitmapInfo.byteOrder32Big.rawValue | CGImageAlphaInfo.premultipliedLast.rawValue
-        let colorSpace = CGColorSpaceCreateDeviceRGB()
-        if let context = CGContext(data: buffer, width: width, height: height, bitsPerComponent: 8, bytesPerRow: 4 * width, space: colorSpace, bitmapInfo: bitmapInfo, releaseCallback: { _, data in data?.deallocate() }, releaseInfo: nil) {
-            return context.makeImage()
-        } else {
-            buffer.deallocate()
-            return nil
-        }
+      let bytes = 4 * width * height
+      let buffer = UnsafeMutableRawPointer.allocate(byteCount: bytes, alignment: 0)
+      pixels.withUnsafeBytes { pixels in
+        buffer.copyMemory(from: pixels.baseAddress!, byteCount: pixels.count)
+      }
+
+      let bitmapInfo =
+        CGBitmapInfo.byteOrder32Big.rawValue | CGImageAlphaInfo.premultipliedLast.rawValue
+      let colorSpace = CGColorSpaceCreateDeviceRGB()
+      if let context = CGContext(
+        data: buffer, width: width, height: height, bitsPerComponent: 8, bytesPerRow: 4 * width,
+        space: colorSpace, bitmapInfo: bitmapInfo,
+        releaseCallback: { _, data in data?.deallocate() }, releaseInfo: nil)
+      {
+        return context.makeImage()
+      } else {
+        buffer.deallocate()
+        return nil
+      }
     }
-    
+
     public func makeNSImage() -> NSImage? {
-        makeCGImage().map { NSImage(cgImage: $0, size: NSSize(width: width, height: height)) }
+      makeCGImage().map { NSImage(cgImage: $0, size: NSSize(width: width, height: height)) }
     }
-}
+  }
 
-extension GLFWWindow {
+  extension GLFWWindow {
     public func setIcon(_ image: Image) {
-        if let image = image.makeNSImage() {
-            NSApp.applicationIconImage = image
-        }
+      if let image = image.makeNSImage() {
+        NSApp.applicationIconImage = image
+      }
     }
-    
-    public func resetIcon() {
-        NSApp.applicationIconImage = nil
-    }
-    
-    public func setDockPreview(_ image: Image) {
-        if let window = nsWindow, let preview = image.makeNSImage() {
-            if let contentView = window.dockTile.contentView as? NSImageView {
-                contentView.image = preview
-            } else {
-                let imageView = NSImageView(image: preview)
-                window.dockTile.contentView = imageView
-            }
-            window.dockTile.display()
-        }
-    }
-    
-    public func resetDockPreview() {
-        nsWindow?.dockTile.contentView = nil
-        nsWindow?.dockTile.display()
-    }
-}
 
-extension GLFWContext {
+    public func resetIcon() {
+      NSApp.applicationIconImage = nil
+    }
+
+    public func setDockPreview(_ image: Image) {
+      if let window = nsWindow, let preview = image.makeNSImage() {
+        if let contentView = window.dockTile.contentView as? NSImageView {
+          contentView.image = preview
+        } else {
+          let imageView = NSImageView(image: preview)
+          window.dockTile.contentView = imageView
+        }
+        window.dockTile.display()
+      }
+    }
+
+    public func resetDockPreview() {
+      nsWindow?.dockTile.contentView = nil
+      nsWindow?.dockTile.display()
+    }
+  }
+
+  extension GLFWContext {
     @available(macOS, deprecated: 10.14, message: "Please use Metal or MetalKit.")
     nonisolated public var nsOpenGLContext: NSOpenGLContext? {
-        return glfwGetNSGLContext(pointer) as? NSOpenGLContext
+      return glfwGetNSGLContext(pointer) as? NSOpenGLContext
     }
-}
+  }
 
-#if GLFW_METAL_LAYER_SUPPORT
-@available(macOS 10.11, *)
-extension GLFWWindow {
-    public var metalLayer: CAMetalLayer? {
+  #if GLFW_METAL_LAYER_SUPPORT
+    @available(macOS 10.11, *)
+    extension GLFWWindow {
+      public var metalLayer: CAMetalLayer? {
         return glfwGetMetalLayer(pointer) as? CAMetalLayer
+      }
     }
-}
+  #endif
 #endif
-#endif
+
+// #if os(macOS) && canImport(Cocoa)
+//   import Cocoa
+//   import CGLFW3
+
+//   extension GLFWSession {
+//     @InitHint(.cocoaChDirResources, default: false)
+//     public static var relativeToAppResources: Bool
+
+//     @InitHint(.cocoaMenuBar, default: true)
+//     public static var generateMenuBar: Bool
+//   }
+
+//   extension GLFWMonitor {
+//     nonisolated public var directDisplayID: CGDirectDisplayID {
+//       return glfwGetCocoaMonitor(pointer)
+//     }
+//   }
+
+//   extension GLFWWindow {
+//     nonisolated public var nsWindow: NSWindow? {
+//       return glfwGetCocoaWindow(pointer) as? NSWindow
+//     }
+//   }
+
+//   extension Image {
+//     public func makeCGImage() -> CGImage? {
+//       let byteCount = width * height * 4
+
+//       // Convert Color array to raw bytes
+//       let data = pixels.withUnsafeBytes { bytes in
+//         Data(bytes: bytes.baseAddress!, count: byteCount)
+//       }
+
+//       guard let provider = CGDataProvider(data: data as CFData) else { return nil }
+
+//       let colorSpace = CGColorSpaceCreateDeviceRGB()
+//       let bitmapInfo = CGBitmapInfo.byteOrder32Big.union(
+//         .init(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue))
+
+//       return CGImage(
+//         width: width,
+//         height: height,
+//         bitsPerComponent: 8,
+//         bitsPerPixel: 32,
+//         bytesPerRow: width * 4,
+//         space: colorSpace,
+//         bitmapInfo: bitmapInfo,
+//         provider: provider,
+//         decode: nil,
+//         shouldInterpolate: false,
+//         intent: .defaultIntent
+//       )
+//     }
+
+//     public func makeNSImage() -> NSImage? {
+//       makeCGImage().map { NSImage(cgImage: $0, size: NSSize(width: width, height: height)) }
+//     }
+//   }
+
+//   extension GLFWWindow {
+//     public func setIcon(_ image: Image) {
+//       if let image = image.makeNSImage() {
+//         NSApp.applicationIconImage = image
+//       }
+//     }
+
+//     public func resetIcon() {
+//       NSApp.applicationIconImage = nil
+//     }
+
+//     public func setDockPreview(_ image: Image) {
+//       if let window = nsWindow, let preview = image.makeNSImage() {
+//         if let contentView = window.dockTile.contentView as? NSImageView {
+//           contentView.image = preview
+//         } else {
+//           let imageView = NSImageView(image: preview)
+//           window.dockTile.contentView = imageView
+//         }
+//         window.dockTile.display()
+//       }
+//     }
+
+//     public func resetDockPreview() {
+//       nsWindow?.dockTile.contentView = nil
+//       nsWindow?.dockTile.display()
+//     }
+//   }
+
+//   extension GLFWContext {
+//     @available(macOS, deprecated: 10.14, message: "Please use Metal or MetalKit.")
+//     nonisolated public var nsOpenGLContext: NSOpenGLContext? {
+//       return glfwGetNSGLContext(pointer) as? NSOpenGLContext
+//     }
+//   }
+
+//   #if GLFW_METAL_LAYER_SUPPORT
+//     @available(macOS 10.11, *)
+//     extension GLFWWindow {
+//       public var metalLayer: CAMetalLayer? {
+//         return glfwGetMetalLayer(pointer) as? CAMetalLayer
+//       }
+//     }
+//   #endif
+// #endif

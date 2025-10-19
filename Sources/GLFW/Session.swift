@@ -1,6 +1,6 @@
 import CGLFW3
 
-@MainActor
+@preconcurrency @MainActor
 public enum GLFWSession {
     public struct Version: Hashable, Equatable, Comparable {
         public static func < (lhs: Version, rhs: Version) -> Bool {
