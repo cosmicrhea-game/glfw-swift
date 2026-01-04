@@ -115,6 +115,16 @@ extension Int32 {
     
     static let joystickHatButtons = GLFW_JOYSTICK_HAT_BUTTONS
     
+    static let hatCentered = GLFW_HAT_CENTERED
+    static let hatUp = GLFW_HAT_UP
+    static let hatRight = GLFW_HAT_RIGHT
+    static let hatDown = GLFW_HAT_DOWN
+    static let hatLeft = GLFW_HAT_LEFT
+    static let hatRightUp = GLFW_HAT_RIGHT_UP
+    static let hatRightDown = GLFW_HAT_RIGHT_DOWN
+    static let hatLeftUp = GLFW_HAT_LEFT_UP
+    static let hatLeftDown = GLFW_HAT_LEFT_DOWN
+    
     static let cocoaChDirResources = GLFW_COCOA_CHDIR_RESOURCES
     static let cocoaMenuBar = GLFW_COCOA_MENUBAR
     

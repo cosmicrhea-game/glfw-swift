@@ -46,6 +46,22 @@ public enum GLFWSession {
         }
     }
     
+    /// Callback for joystick connection/disconnection events
+    public static var onJoystickEvent: ((Gamepad, Gamepad.Status) -> Void)? {
+        didSet {
+            Gamepad.setCallback(GLFWSession.onJoystickEvent)
+        }
+    }
+    
+    /// Update gamepad mappings from an SDL_GameControllerDB format string
+    /// This function parses the specified string and updates the internal list
+    /// with any gamepad mappings it finds. The string may contain either a single
+    /// gamepad mapping or many mappings separated by newlines.
+    @discardableResult
+    public static func updateGamepadMappings(_ mappings: String) -> Bool {
+        glfwUpdateGamepadMappings(mappings) == .true
+    }
+
     public static func initialize() throws {
         guard glfwInit() == .true else {
             try checkForError()
